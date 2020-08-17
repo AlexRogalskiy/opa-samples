@@ -1,0 +1,44 @@
+# imageTag: 0.22.0
+
+opa: false
+
+# logLevel: error
+
+mgmt:
+  # imageTag: 0.11
+  configmapPolicies:
+    enabled: true
+    namespaces: [opa]
+  replicate:
+    cluster:
+    - v1/namespaces
+    namespace:
+    - v1/pods
+
+rbac:
+  rules:
+    cluster:
+    - apiGroups:
+        - "*"
+      resources:
+        - configmaps
+      verbs:
+        - get
+        - list
+        - watch
+        - patch
+        - update
+    - apiGroups:
+        - "*"
+      resources:
+        - pods
+        - namespaces
+      verbs:
+        - get
+        - list
+        - watch
+
+# admissionControllerFailurePolicy: Fail
+
+authz:
+  enabled: false
