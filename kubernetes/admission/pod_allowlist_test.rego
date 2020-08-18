@@ -15,8 +15,21 @@ test_allow_happy_path {
 	}}
 }
 
+test_deny_bad_node_selector {
+	admission.deny["pod with serviceAccount \"banzaicloud\", image \"banzaicloud/pipeline\" is not allowed"] with input as {"request": {
+		"operation": "CREATE",
+		"kind": {"kind": "Pod"},
+		"namespace": "default",
+		"object": {"spec": {
+			"serviceAccountName": "banzaicloud",
+			"containers": [{"image": "banzaicloud/pipeline"}],
+			"nodeSelector": {"failure-domain.beta.kubernetes.io/region": "us-west2"},
+		}},
+	}}
+}
+
 test_deny_non_whitelisted_service_account {
-	admission.deny["pod serviceAccount \"default\" with image \"banzaicloud/pipeline\" is not allowed"] with input as {"request": {
+	admission.deny["pod with serviceAccount \"default\", image \"banzaicloud/pipeline\" is not allowed"] with input as {"request": {
 		"operation": "CREATE",
 		"kind": {"kind": "Pod"},
 		"namespace": "default",
@@ -28,7 +41,7 @@ test_deny_non_whitelisted_service_account {
 }
 
 test_deny_whitelisted_service_account_with_non_whitelisted_image {
-	admission.deny["pod serviceAccount \"banzaicloud\" with image \"banzaicloud/not-allowed-app\" is not allowed"] with input as {"request": {
+	admission.deny["pod with serviceAccount \"banzaicloud\", image \"banzaicloud/not-allowed-app\" is not allowed"] with input as {"request": {
 		"operation": "CREATE",
 		"kind": {"kind": "Pod"},
 		"namespace": "default",

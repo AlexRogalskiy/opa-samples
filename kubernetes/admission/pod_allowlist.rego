@@ -1,10 +1,17 @@
 package kubernetes.admission
 
-allowlist = [{
-	"serviceAccount": "banzaicloud",
-	"images": {"banzaicloud/pipeline", "banzaicloud/backyards"},
-	"nodeSelector": [{"failure-domain.beta.kubernetes.io/region": "europe-west1"}], # possible nodeSelector combinations we allow
-}]
+allowlist = [
+	{
+		"serviceAccount": "banzaicloud",
+		"images": {"banzaicloud/pipeline", "banzaicloud/backyards"},
+		"nodeSelector": [{"failure-domain.beta.kubernetes.io/region": "europe-west1"}], # possible nodeSelector combinations we allow
+	},
+	{
+		"serviceAccount": "logging",
+		"images": {"banzaicloud/logging-operator", "fluent/fluentd"},
+		"nodeSelector": [],
+	},
+]
 
 deny[msg] {
 	input.request.kind.kind == "Pod"
@@ -18,12 +25,15 @@ deny[msg] {
 
 	not imageWithServiceAccountAllowed(serviceAccount, image, nodeSelector)
 
-	msg := sprintf("pod serviceAccount %q with image %q is not allowed", [serviceAccount, image])
+	msg := sprintf("pod with serviceAccount %q, image %q is not allowed", [serviceAccount, image])
+	# trace(msg)
 }
 
 imageWithServiceAccountAllowed(serviceAccount, image, nodeSelector) {
 	allowlist[a].serviceAccount == serviceAccount
 	allowlist[a].images[image]
+
+	# requires that at least one nodeSelector combination matches
 	selcount := count(allowlist[a].nodeSelector[ns])
 	count({k | allowlist[a].nodeSelector[s][k] == nodeSelector[k]}) == selcount
 }
