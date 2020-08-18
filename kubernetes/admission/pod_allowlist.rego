@@ -4,7 +4,8 @@ allowlist = [
 	{
 		"serviceAccount": "banzaicloud",
 		"images": {"banzaicloud/pipeline", "banzaicloud/backyards"},
-		"nodeSelector": [{"failure-domain.beta.kubernetes.io/region": "europe-west1"}], # possible nodeSelector combinations we allow
+		# possible nodeSelector combinations we allow, the pod can have more nodeSelectors of course
+		"nodeSelector": [{"failure-domain.beta.kubernetes.io/region": "europe-west1"}],
 	},
 	{
 		"serviceAccount": "logging",
@@ -20,20 +21,18 @@ deny[msg] {
 	# input.request.namespace == "opa-example"
 	serviceAccount := input.request.object.spec.serviceAccountName
 	image := input.request.object.spec.containers[_].image
-
 	nodeSelector := object.get(input.request.object.spec, "nodeSelector", {})
 
 	not imageWithServiceAccountAllowed(serviceAccount, image, nodeSelector)
 
 	msg := sprintf("pod with serviceAccount %q, image %q is not allowed", [serviceAccount, image])
-	# trace(msg)
 }
 
 imageWithServiceAccountAllowed(serviceAccount, image, nodeSelector) {
 	allowlist[a].serviceAccount == serviceAccount
 	allowlist[a].images[image]
 
-	# requires that at least one nodeSelector combination matches
+	# requires that at least one nodeSelector combination matches this image and serviceAccount combination
 	selcount := count(allowlist[a].nodeSelector[ns])
 	count({k | allowlist[a].nodeSelector[s][k] == nodeSelector[k]}) == selcount
 }
