@@ -4,7 +4,7 @@ kubectl create namespace opa
 
 kubectl label namespaces opa openpolicyagent.org/webhook=ignore
 
-helm upgrade --install opa ../../helm/charts/stable/opa --namespace opa \
+helm upgrade --install opa stable/opa --namespace opa \
     --values helm-values.yaml
 
 kubectl create configmap opa-main --from-file=./kubernetes/admission/main.rego -n opa
