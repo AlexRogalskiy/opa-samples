@@ -2,7 +2,7 @@ package kubernetes.admission_test
 
 import data.kubernetes.admission
 
-test_allow_whitelisted_service_account {
+test_allow_happy_path {
 	admission.deny == set() with input as {"request": {
 		"operation": "CREATE",
 		"kind": {"kind": "Pod"},
@@ -10,6 +10,7 @@ test_allow_whitelisted_service_account {
 		"object": {"spec": {
 			"serviceAccountName": "banzaicloud",
 			"containers": [{"image": "banzaicloud/pipeline"}],
+			"nodeSelector": {"failure-domain.beta.kubernetes.io/region": "europe-west1"},
 		}},
 	}}
 }
