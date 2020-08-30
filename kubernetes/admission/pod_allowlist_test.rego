@@ -16,7 +16,7 @@ test_allow_happy_path {
 }
 
 test_deny_bad_node_selector {
-	admission.deny["pod with serviceAccount \"banzaicloud\", image \"banzaicloud/pipeline\" is not allowed"] with input as {"request": {
+	admission.deny["pod with serviceAccount \"banzaicloud\", image \"banzaicloud/pipeline\" is not allowed at the specified location"] with input as {"request": {
 		"operation": "CREATE",
 		"kind": {"kind": "Pod"},
 		"namespace": "default",
