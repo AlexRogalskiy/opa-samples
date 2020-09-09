@@ -1,0 +1,68 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    istio.io/rev: cp-v17x.istio-system
+  name: data
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: data
+  namespace: data
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: data
+  namespace: data
+  labels:
+    app: data
+    version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: data
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: data
+        version: v1
+    spec:
+      containers:
+      - name: service
+        image: banzaicloud/allspark:0.1.2
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+        env:
+        - name: WORKLOAD
+          value: Echo
+        - name: ECHO_STR
+          value: "data service response"
+        - name: HTTPSERVER_ENDPOINT
+          value: /api/v1/data
+        resources:
+          limits:
+            cpu: 1500m
+            memory: 256Mi
+          requests:
+            cpu: 250m
+            memory: 64Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: data
+  namespace: data
+  labels:
+    app: data
+    service: data
+spec:
+  ports:
+  - port: 8080
+    name: http
+  selector:
+    app: data

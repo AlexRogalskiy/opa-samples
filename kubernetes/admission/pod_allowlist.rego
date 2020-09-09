@@ -5,8 +5,8 @@ allowlist = [
 		"serviceAccount": "analytics",
 		"images": {"banzaicloud/allspark:0.1.2", "banzaicloud/istio-proxyv2:1.7.0-bzc"},
 		# possible nodeSelector combinations we allow, the pod can have more nodeSelectors of course
-		# "nodeSelector": [{"failure-domain.beta.kubernetes.io/region": "europe-west1"}],
-		"nodeSelector": [],
+		"nodeSelector": [{"failure-domain.beta.kubernetes.io/region": "europe-west1"}],
+		# "nodeSelector": [],
 	},
 ]
 

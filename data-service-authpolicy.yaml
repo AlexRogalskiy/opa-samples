@@ -1,0 +1,17 @@
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: data
+  namespace: data
+spec:
+  selector:
+    matchLabels:
+      app: data
+  rules:
+  - from:
+    - source:
+        principals: ["cluster.local/ns/analytics/sa/analytics"]
+    to:
+    - operation:
+        methods: ["GET"]
+        paths: ["/api/v1/data"]
